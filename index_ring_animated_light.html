@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Animated Ring – 1st Sec (Light)</title>
+  <style>
+    :root {
+      --bg: #f7fafc;
+      --text: #0f172a;
+      --muted: #475569;
+      --ring: #dbe7ff;
+      --grad1: #93c5fd;
+      --grad2: #fbcfe8;
+      --centerA: #bae6fd;
+      --centerB: #93c5fd;
+      --unitA: #e9d5ff;
+      --unitB: #fce7f3;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100svh
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(90deg, var(--grad1), var(--grad2));
+      color: #0f172a;
+      padding: 22px 14px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(147, 197, 253, .45)
+    }
+
+    .title {
+      font-weight: 900;
+      font-size: clamp(20px, 5vw, 32px);
+      margin: 0;
+      letter-spacing: .3px
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 22px auto;
+      padding: 0 14px
+    }
+
+    .bg-dots {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1
+    }
+
+    .bg-dots span {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      opacity: .25;
+      animation: floatDot 10s ease-in-out infinite
+    }
+
+    @keyframes floatDot {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-10px)
+      }
+    }
+
+    .ring {
+      position: relative;
+      margin: 24px auto;
+      width: min(720px, 92vw);
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #ffffff 0%, #eef2ff 55%, #e9edf9 100%);
+      box-shadow: inset 0 16px 42px rgba(147, 197, 253, .28), 0 16px 42px rgba(203, 213, 225, .45);
+      animation: floatRing 9s ease-in-out infinite
+    }
+
+    @keyframes floatRing {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-6px)
+      }
+    }
+
+    .orbit {
+      position: absolute;
+      inset: 12%;
+      border-radius: 50%;
+      border: 2px dashed rgba(147, 197, 253, .6);
+      animation: spin 28s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 44%;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--centerA), var(--centerB) 60%, #c7d2fe 100%);
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10px;
+      box-shadow: 0 20px 60px rgba(147, 197, 253, .55), inset 0 10px 20px rgba(255, 255, 255, .8);
+      animation: popIn .8s ease-out both .12s
+    }
+
+    .center h2 {
+      margin: 0;
+      font-size: clamp(16px, 3.8vw, 24px);
+      font-weight: 900;
+      letter-spacing: .4px
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: translate(-50%, -50%) scale(.9);
+        opacity: 0
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1
+      }
+    }
+
+    .unit {
+      position: absolute;
+      background: linear-gradient(180deg, var(--unitA), var(--unitB));
+      color: #0f172a;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-weight: 800;
+      box-shadow: 0 12px 26px rgba(203, 213, 225, .7), inset 0 1px 0 rgba(255, 255, 255, .9);
+      border: 2px solid var(--ring);
+      min-width: 104px;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, filter .25s ease;
+      animation: fadeUp .7s ease both
+    }
+
+    .unit:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 18px 38px rgba(203, 213, 225, .85);
+      filter: saturate(1.15)
+    }
+
+    .unit:active {
+      transform: translateY(0) scale(.99)
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .pos-t {
+      left: 50%;
+      top: 4%;
+      transform: translateX(-50%)
+    }
+
+    .pos-tr {
+      right: 4%;
+      top: 20%
+    }
+
+    .pos-br {
+      right: 4%;
+      bottom: 20%
+    }
+
+    .pos-b {
+      left: 50%;
+      bottom: 4%;
+      transform: translateX(-50%)
+    }
+
+    .pos-bl {
+      left: 4%;
+      bottom: 20%
+    }
+
+    .pos-tl {
+      left: 4%;
+      top: 20%
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 18px 8px
+    }
+  </style>
+</head>
+
+<body>
+  <div class='bg-dots'>
+    <span style='left:8%;top:22%;background:#93c5fd;animation-delay:.2s'></span>
+    <span style='left:72%;top:28%;background:#fca5a5;animation-delay:1s'></span>
+    <span style='left:86%;top:72%;background:#a78bfa;animation-delay:.6s'></span>
+    <span style='left:28%;top:78%;background:#fde68a;animation-delay:1.5s'></span>
+  </div>
+  <header>
+    <h1 class='title'>Asmaa Mahmoud Elhagrasy</h1>
+  </header>
+  <main class='container'>
+    <section class='ring'>
+      <div class='orbit' aria-hidden='true'></div>
+      <div class='center' role='button' tabindex='0' onclick="say('21st Sec First Term')" aria-label='Center title'>
+        <h2>21st Sec First Term</h2>
+      </div>
+      <a class='unit pos-t' href='index_simple_sheet_classic%20%281%29 (4).html' onclick='openUnit(1);return false'>Unit
+        1</a>
+      <a class='unit pos-tr' href='unit2_mini_platform_lavender.html' onclick='openUnit(2);return false'>Unit 2</a>
+      <a class='unit pos-br' href='unit3_mini_platform_ocean.html' onclick='openUnit(3);return false'>Unit 3</a>
+      <a class='unit pos-b' href='Unit4_SaveAndShine_Interactive_v4 (3).html' onclick='openUnit(4);return false'>Unit
+        4</a>
+      <a class='unit pos-bl' href='unit5_mini_platform_mint.html' onclick='openUnit(5);return false'>Unit 5</a>
+      <a class='unit pos-tl' href='Unit6_JobHunting_Interactive_v1.html' onclick='openUnit(6);return false'>Unit 6</a>
+    </section>
+  </main>
+  <footer>1st Secondary – First Term</footer>
+  <script>
+    function say(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'en-GB'; u.rate = 0.92; speechSynthesis.speak(u); } catch (e) { } }
+    function openUnit(n) { const links = { 1: 'index_simple_sheet_classic%20%281%29 (4).html', 2: 'unit2_mini_platform_lavender.html', 3: 'unit3_mini_platform_ocean.html', 4: 'Unit4_SaveAndShine_Interactive_v4 (3).html', 5: 'unit5_mini_platform_mint.html', 6: 'Unit6_JobHunting_Interactive_v1.html' }; const url = links[n]; if (!url || url === '#') { pulse(n); alert(`Unit ${n} is coming soon.`); } else { location.href = url; } }
+    function pulse(n) {
+      const units = document.querySelectorAll('.unit');
+      const el = units[n - 1]; if (!el) return;
+      el.animate([{ boxShadow: '0 0 0 0 rgba(147,197,253,.8)' }, { boxShadow: '0 0 0 18px rgba(147,197,253,0)' }], { duration: 700, easing: 'ease-out' });
+    }
+  </script>
+</body>
+
+</html>

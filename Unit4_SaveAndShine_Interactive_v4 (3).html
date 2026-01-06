@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Unit 4 — Save and Shine | Interactive Lessons Hub (v4)</title>
+<style>
+  :root{ --bg:#f6f7fb; --text:#0b1220; --pill:#e2e8f0; --pillActive:#ffe580; --cardShadow:0 8px 20px rgba(0,0,0,.08); --good:#22c55e; --bad:#ef4444; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Tahoma",system-ui,Segoe UI,Arial}
+  header{background:linear-gradient(90deg,#34d399,#60a5fa); color:#0b1220; padding:16px 14px; position:sticky; top:0; z-index:30}
+  .headWrap{max-width:1100px;margin:0 auto;display:flex;gap:12px;align-items:center}
+  .brand{width:44px;height:44px;border-radius:14px;background:conic-gradient(from 200deg,#22c55e,#60a5fa,#f59e0b,#a78bfa,#22c55e)}
+  h1{margin:0;font-size:20px}
+  small{opacity:.8}
+
+  .container{max-width:1100px;margin:14px auto;padding:0 12px}
+  .lessonGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+  .lessonCard{background:#fff;border-radius:16px;padding:14px;text-align:center;font-weight:900;box-shadow:var(--cardShadow);cursor:pointer;border:1px solid #eef2ff}
+  .lessonCard.active{background:#fde68a}
+  .lessonCard.unit{background:#e0f2fe}
+
+  .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .tabBtn{background:var(--pill);border:none;border-radius:999px;padding:10px 14px;font-weight:900;cursor:pointer;color:#111827}
+  .tabBtn.active{background:var(--pillActive)}
+
+  .panel{background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:var(--cardShadow);padding:12px;margin-top:12px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+  .card{border-radius:18px;padding:14px;box-shadow:var(--cardShadow);border:1px solid #eef2ff}
+  .card:nth-child(6n+1){background:#ffd1d1}
+  .card:nth-child(6n+2){background:#ffe1af}
+  .card:nth-child(6n+3){background:#fff4b3}
+  .card:nth-child(6n+4){background:#c9f7dc}
+  .card:nth-child(6n+5){background:#d7ecff}
+  .card:nth-child(6n+6){background:#f3d9ff}
+  .en{font-size:22px;font-weight:900}
+  .ar{margin-top:4px;color:#1f2937}
+  .ex{margin-top:8px;color:#0f172a;opacity:.9}
+  .actions{display:flex;gap:8px;margin-top:10px}
+  .btn{border:none;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer}
+  .primary{background:#22c55e;color:#063019}
+  .secondary{background:#dbeafe;color:#0b1220}
+
+  .box{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .draggable{background:#fde68a;padding:12px;border-radius:12px;text-align:center;font-weight:900;cursor:grab}
+  .dropzone{background:#e2e8f0;padding:12px;border-radius:12px;min-height:52px;border:2px dashed #94a3b8;text-align:center}
+  .dropzone.correct{background:#86efac;border-color:#16a34a}
+
+  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+  .opt{border:none;border-radius:12px;padding:14px;font-weight:900;cursor:pointer;color:#0b1220}
+  .opt.correct{outline:4px solid var(--good)}
+  .opt.wrong{outline:4px solid var(--bad); opacity:.75}
+
+  .readingLine{display:flex;justify-content:space-between;align-items:center;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:12px;margin-top:8px}
+
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:100}
+  .piece{position:absolute;width:10px;height:14px;animation:fall 1800ms linear forwards}
+  @keyframes fall{to{transform:translateY(100vh) rotate(720deg);opacity:.25}}
+
+  .toolbar{display:flex;gap:8px;margin:8px 0}
+
+  .grammarBox{display:grid;gap:10px}
+  .gInf{background:#eff6ff;color:#1e40af;border-radius:10px;padding:10px}
+  .gIng{background:#f5f3ff;color:#6d28d9;border-radius:10px;padding:10px}
+  .gBoth{background:#ecfdf5;color:#065f46;border-radius:10px;padding:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="headWrap">
+    <div class="brand"></div>
+    <div>
+      <h1>Unit 4 — Save and Shine | All‑in‑One Lessons Hub</h1>
+      <small>Prepared by: Ms Asmaa Mahmoud El‑Hagrasy</small>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div id="lessonGrid" class="lessonGrid"></div>
+  <div id="tabs" class="tabs"></div>
+  <div id="tabContent"></div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+let voices=[]; function loadVoices(){ voices=speechSynthesis.getVoices(); } window.speechSynthesis.onvoiceschanged=loadVoices; loadVoices();
+function pickBritish(){ const c=(voices||[]).filter(v=>/en-GB|UK|Brit/i.test(v.lang+v.name)); const f=c.find(v=>/Female|Sonia|Hazel|Libby|Serena|Zira|Amy|Emma/i.test(v.name)); return f||c[0]||null; }
+function speak(text, rate=.82){ const u=new SpeechSynthesisUtterance(text); u.rate=rate; u.pitch=1.05; u.lang='en-GB'; const v=pickBritish(); if(v) u.voice=v; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+function cheer(){ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.type='triangle'; o.frequency.value=640; g.gain.value=.06; o.connect(g).connect(ctx.destination); o.start(); setTimeout(()=>o.frequency.value=840,160); setTimeout(()=>o.stop(),360); confetti(); }
+function confetti(){ const c=document.getElementById('confetti'); c.innerHTML=''; for(let i=0;i<40;i++){ const p=document.createElement('div'); p.className='piece'; p.style.left=Math.random()*100+'vw'; p.style.top='-10px'; p.style.background=`hsl(${Math.random()*360},90%,60%)`; p.style.animationDuration=(1200+Math.random()*1200)+'ms'; c.appendChild(p);} setTimeout(()=>c.innerHTML='',2000) }
+
+const lessons = [
+  { id:1, title:'Lesson 1 — Go Green', vocab:[
+      {en:'green manufacturing', ar:'التصنيع الأخضر', ex:'Many companies adopt green manufacturing.'},
+      {en:'renewable energy', ar:'طاقة متجددة', ex:'Solar and wind are renewable energy.'},
+      {en:'depletion', ar:'استنزاف الموارد', ex:'Overuse causes depletion of natural resources.'},
+      {en:'landfill', ar:'مكبّ نفايات', ex:'Recycling reduces waste going into landfills.'},
+      {en:'initiative', ar:'مبادرة', ex:'They took the initiative to go green.'},
+      {en:'eco‑friendly', ar:'صديق للبيئة', ex:'Eco‑friendly products help the planet.'},
+      {en:'slogan', ar:'شعار', ex:'“Go Green” became a popular slogan.'},
+      {en:'concerns', ar:'مخاوف بيئية', ex:'Environmental concerns affect all industries.'},
+      {en:'recycle', ar:'إعادة تدوير', ex:'Factories should recycle plastic.'},
+      {en:'reduce', ar:'يقلّل/يخفّض', ex:'We can reduce pollution by saving energy.'},
+    ], reading:[
+      'Going green means changing actions to be environmentally friendly.',
+      'Green manufacturing protects nature and future resources.',
+      'It includes eco‑friendly products and cleaner processes.',
+      'This approach slows depletion and reduces landfill waste.',
+      'Many companies take the initiative to adopt green practices.',
+      'Global warming is a major concern discussed worldwide.'
+    ] },
+  { id:2, title:'Lesson 2 — One Bag at a Time (Listening)', vocab:[
+      {en:'reusable', ar:'قابل لإعادة الاستخدام', ex:'Reusable bags save money and reduce waste.'},
+      {en:'campaign', ar:'حَملة', ex:'Ahmed led a campaign to reduce plastic use.'},
+      {en:'waste', ar:'نفايات', ex:'We should reduce plastic waste.'},
+      {en:'reduce', ar:'تقليل', ex:'Shops reduced plastic bag use after the campaign.'},
+      {en:'swap', ar:'استبدال', ex:'The Bag Swap Day was fun for families.'},
+    ], reading:[
+      'Ahmed promoted reusable bags in his neighborhood.',
+      'The campaign saved money, reduced waste, and kept the area clean.',
+      'A Bag Swap Day made the campaign exciting.',
+      'Local shops and families supported the idea.'
+    ] },
+  { id:3, title:'Lesson 3 — Small Actions Make a Difference (Grammar)', grammar:true, vocab:[
+      {en:'energy', ar:'طاقة', ex:'Saving energy helps the planet.'},
+      {en:'plastic', ar:'بلاستيك', ex:'Reducing plastic is important.'},
+      {en:'cleaner', ar:'أنظف', ex:'Cleaner cities are healthier.'},
+      {en:'trees', ar:'أشجار', ex:'Planting trees gives us fresh air.'},
+      {en:'recycling', ar:'إعادة تدوير', ex:'Recycling reduces waste.'},
+    ], reading:[
+      'Turning off lights and unplugging devices saves energy.',
+      'Planting trees and using reusable bags reduce pollution.',
+      'Working together creates a greener future.',
+      'Use correct verb forms: to‑infinitive or gerund (‑ing).'
+    ], grammarIntro:'Verbs + infinitive or ‑ing' },
+  { id:4, title:'Lesson 4 — Helping Our Community (Reading)', vocab:[
+      {en:'survey', ar:'مسح/استقصاء', ex:'The Water Team surveyed water sources at school.'},
+      {en:'observations', ar:'ملاحظات', ex:'They wrote their observations in a notebook.'},
+      {en:'drips', ar:'نقاط ماء/تسريبات', ex:'Finding drips can save many liters a day.'},
+      {en:'mission', ar:'مهمة', ex:'The team’s mission was to reduce water waste.'},
+      {en:'assembly', ar:'اجتماع/حفل مدرسي', ex:'They presented ideas at the school assembly.'},
+      {en:'impact', ar:'أثر/تأثير', ex:'Small actions can have a big impact.'},
+      {en:'leak', ar:'تسرّب', ex:'Fixing leaks saves water and energy.'},
+      {en:'record', ar:'يسجّل/تسجيل', ex:'Students recorded their findings.'},
+    ], reading:[
+      'Students formed teams to help the environment at school.',
+      'The Water Team checked taps and fountains for drips.',
+      'They recorded observations and shared ideas at an assembly.',
+      'Small changes by many people have a big impact.'
+    ] }
+];
+
+const LESSON_TABS_BASE=['Vocabulary','Reading','Games'];
+let current={type:'lesson', id:3, tab:'Grammar'};
+
+const lessonGrid=document.getElementById('lessonGrid');
+function renderLessonCards(){ lessonGrid.innerHTML=''; lessons.forEach(ls=>{ const card=document.createElement('div'); card.className='lessonCard'; card.textContent=ls.title; card.onclick=()=>{ current={type:'lesson', id:ls.id, tab: ls.grammar ? 'Grammar' : 'Vocabulary'}; renderTabs(); renderTabContent(); highlightCards(); }; if(current.type==='lesson'&&current.id===ls.id) card.classList.add('active'); lessonGrid.appendChild(card); }); const unit=document.createElement('div'); unit.className='lessonCard unit'; unit.textContent='Unit Exam (20 MCQs)'; unit.onclick=()=>{ current={type:'unitExam', id:'unit', tab:null}; renderTabs(); renderTabContent(); highlightCards(); }; lessonGrid.appendChild(unit); }
+function highlightCards(){ document.querySelectorAll('.lessonCard').forEach((c,i)=>{ const isUnit=c.classList.contains('unit'); if(!isUnit){ const id=lessons[i].id; c.classList.toggle('active', current.type==='lesson'&&current.id===id);} else { c.classList.toggle('active', current.type==='unitExam'); } }); }
+
+const tabsWrap=document.getElementById('tabs');
+function renderTabs(){ tabsWrap.innerHTML=''; if(current.type==='lesson'){ const ls=lessons.find(x=>x.id===current.id); const tabs=[...LESSON_TABS_BASE]; if(ls.grammar) tabs.splice(1,0,'Grammar','Practice'); // add Practice tab in grammar lessons
+    tabs.forEach(name=>{ const b=document.createElement('button'); b.className='tabBtn'; b.textContent=name; b.onclick=()=>{ current.tab=name; renderTabContent(); setActiveTab(); }; tabsWrap.appendChild(b); }); current.tab=current.tab||tabs[0]; setActiveTab(); } else { const b=document.createElement('button'); b.className='tabBtn active'; b.textContent='Unit Exam'; tabsWrap.appendChild(b); } }
+function setActiveTab(){ document.querySelectorAll('.tabBtn').forEach(b=> b.classList.toggle('active', b.textContent===current.tab)); }
+
+const content=document.getElementById('tabContent');
+function renderTabContent(){ content.innerHTML=''; if(current.type==='unitExam') return renderUnitExam(); const ls=lessons.find(x=>x.id===current.id); if(current.tab==='Vocabulary') return renderVocabulary(ls); if(current.tab==='Reading') return renderReading(ls); if(current.tab==='Games') return renderGames(ls); if(current.tab==='Grammar') return renderGrammar(ls); if(current.tab==='Practice') return renderPractice(ls); }
+
+function renderVocabulary(ls){ const p=document.createElement('div'); p.className='panel'; p.innerHTML='<h2>Vocabulary (EN word + AR meaning)</h2>'; const grid=document.createElement('div'); grid.className='cards'; p.appendChild(grid); ls.vocab.forEach(item=>{ const card=document.createElement('div'); card.className='card'; card.innerHTML=`<div class='en'>${item.en}</div><div class='ar'>${item.ar}</div><div class='ex'><i>${item.ex}</i></div>`; const actions=document.createElement('div'); actions.className='actions'; const speakWord=document.createElement('button'); speakWord.className='btn primary'; speakWord.textContent='Pronounce ▶'; speakWord.onclick=()=>speak(item.en,.85); const speakEx=document.createElement('button'); speakEx.className='btn secondary'; speakEx.textContent='Speak Example 🎧'; speakEx.onclick=()=>speak(item.ex,.88); actions.appendChild(speakEx); actions.appendChild(speakWord); card.appendChild(actions); grid.appendChild(card); }); content.appendChild(p); }
+
+function renderReading(ls){ const p=document.createElement('div'); p.className='panel'; p.innerHTML='<h2>Reading — 6 Sentences</h2>'; ls.reading.forEach((line,i)=>{ const row=document.createElement('div'); row.className='readingLine'; row.innerHTML=`<div><b style='color:#2563eb'>Sentence ${i+1}:</b> ${line}</div>`; const b=document.createElement('button'); b.className='btn primary'; b.textContent='🔈 British Slow'; b.onclick=()=>speak(line,.82); row.appendChild(b); p.appendChild(row); }); content.appendChild(p); }
+
+function renderGames(ls){ const p=document.createElement('div'); p.className='panel'; p.innerHTML='<h2>Games</h2>'; const box=document.createElement('div'); box.className='box'; box.innerHTML='<h3>Drag & Drop (AR → EN)</h3>'; const grid=document.createElement('div'); grid.className='grid2'; box.appendChild(grid); const left=document.createElement('div'); const right=document.createElement('div'); grid.appendChild(left); grid.appendChild(right); const shuffled=[...ls.vocab].sort(()=>Math.random()-0.5); shuffled.forEach(v=>{ const d=document.createElement('div'); d.className='draggable'; d.textContent=v.ar; d.draggable=true; d.dataset.word=v.en.toLowerCase(); d.ondragstart=e=>e.dataTransfer.setData('text/plain',d.dataset.word); left.appendChild(d); }); ls.vocab.forEach(v=>{ const dz=document.createElement('div'); dz.className='dropzone'; dz.textContent=v.en; dz.dataset.target=v.en.toLowerCase(); dz.ondragover=e=>e.preventDefault(); dz.ondrop=e=>{ e.preventDefault(); const w=e.dataTransfer.getData('text/plain'); if(w===dz.dataset.target){ dz.classList.add('correct'); dz.textContent+=' ✅'; cheer(); } else { dz.style.borderColor='#ef4444'; setTimeout(()=>dz.style.borderColor='#94a3b8',600); } }; right.appendChild(dz); }); p.appendChild(box); content.appendChild(p); }
+
+// Grammar tab
+function renderGrammar(ls){ const p=document.createElement('div'); p.className='panel'; p.innerHTML='<h2>Grammar — Verbs + Infinitive or ‑ing</h2>'; const expl=document.createElement('div'); expl.className='grammarBox'; expl.innerHTML = `
+  <div class='gInf'><b>Infinitive (to + verb):</b> plans, decisions, intentions.<br><i>Examples:</i> She decided <b>to buy</b> a new eco‑friendly car. We plan <b>to start</b> a campaign.</div>
+  <div class='gIng'><b>Gerund (verb + ‑ing):</b> after certain verbs and for general activities.<br><i>Examples:</i> He enjoys <b>listening</b> to music. They suggested <b>reducing</b> plastic waste.</div>
+  <div class='gBoth'><b>Both (either form):</b> like, love, prefer, start, begin, continue (often both).</div>`; p.appendChild(expl);
+  const q=document.createElement('div'); q.className='box'; p.appendChild(q);
+  const items = [
+    {stem:'She enjoys ______ to music.', opts:['to listen','listening','listen','to listening'], ans:'listening'},
+    {stem:'He promised ______ me with the project.', opts:['helping','to help','to helping','help'], ans:'to help'},
+    {stem:'They avoid ______ junk food.', opts:['eating','eat','to eating','to eat'], ans:'eating'},
+    {stem:'We decided ______ a new car.', opts:['to buy','buying','buy','to buying'], ans:'to buy'},
+    {stem:"I don’t mind ______ for you.", opts:['to wait','waiting','wait','to waiting'], ans:'waiting'},
+    {stem:'She suggested ______ a break.', opts:['taking','to take','take','to taking'], ans:'taking'},
+    {stem:'He stopped ______ a coffee break.', opts:['taking','to take','take','to taking'], ans:'to take'},
+    {stem:'I’ll never forget ______ the Eiffel Tower for the first time.', opts:['to see','seeing','see','to seeing'], ans:'seeing'},
+    {stem:'Please remember ______ off the lights before leaving.', opts:['to turn','turn','turning','to turning'], ans:'to turn'},
+    {stem:'She enjoys ______ novels in her free time.', opts:['read','to read','reading','to reading'], ans:'reading'},
+    {stem:'He promised ______ me with my homework.', opts:['help','to help','helping','to helping'], ans:'to help'},
+    {stem:'We decided ______ to Spain next summer.', opts:['travel','to travel','travelling','to travelling'], ans:'to travel'},
+    {stem:'Nada agreed ______ to the party.', opts:['come','to come','coming','to coming'], ans:'to come'},
+  ];
+  items.forEach(item=>{ const it=document.createElement('div'); it.style.margin='10px 0'; it.innerHTML=`<div>${item.stem}</div>`; const opts=document.createElement('div'); opts.className='options'; it.appendChild(opts); shuffle(item.opts).forEach(o=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o; b.onclick=()=>{ [...opts.children].forEach(btn=> btn.disabled=true); if(o===item.ans){ b.classList.add('correct'); cheer(); } else { b.classList.add('wrong'); [...opts.children].forEach(btn=>{ if(btn.textContent===item.ans) btn.classList.add('correct'); }); } }; opts.appendChild(b); }); q.appendChild(it); });
+  content.appendChild(p); }
+
+// Practice tab (True/False + Match A-B)
+function renderPractice(ls){ const p=document.createElement('div'); p.className='panel'; p.innerHTML='<h2>Practice — True/False & Match A↔B</h2>';
+  const tf=document.createElement('div'); tf.className='box'; tf.innerHTML='<h3>True / False</h3>'; const tfItems=[
+    {stem:'Recycling, reducing, and reusing are ways to protect the environment.', ans:true},
+    {stem:'Using more plastic bags is one of the best ways to help the planet.', ans:false},
+    {stem:'Turning off lights and unplugging devices saves energy.', ans:true},
+    {stem:'Planting trees makes the air polluted.', ans:false},
+    {stem:'Walking or cycling instead of driving helps reduce pollution.', ans:true},
+  ]; tfItems.forEach(item=>{ const row=document.createElement('div'); row.style.margin='8px 0'; row.innerHTML=`<div>${item.stem}</div>`; const opts=document.createElement('div'); opts.className='options'; const bT=document.createElement('button'); bT.className='opt'; bT.textContent='True'; const bF=document.createElement('button'); bF.className='opt'; bF.textContent='False'; [bT,bF].forEach(b=>{ b.onclick=()=>{ bT.disabled=bF.disabled=true; const choice=b.textContent==='True'; if(choice===item.ans){ b.classList.add('correct'); cheer(); } else { b.classList.add('wrong'); (item.ans?bT:bF).classList.add('correct'); } }; opts.appendChild(b); }); tf.appendChild(opts); p.appendChild(tf); });
+
+  const match=document.createElement('div'); match.className='box'; match.innerHTML='<h3>Match A ↔ B</h3>'; const pairs=[
+    {a:'depletion', b:'reduction in the number or amount of something'},
+    {a:'renewable', b:'something that can be replaced naturally'},
+    {a:'sustainable', b:'able to continue without causing damage to the environment'},
+    {a:'eco‑friendly', b:'not harmful to the environment'},
+  ]; const grid=document.createElement('div'); grid.className='grid2'; match.appendChild(grid); const left=document.createElement('div'); const right=document.createElement('div'); grid.appendChild(left); grid.appendChild(right); shuffle(pairs).forEach(pr=>{ const d=document.createElement('div'); d.className='draggable'; d.textContent=pr.a; d.draggable=true; d.dataset.word=pr.a.toLowerCase(); d.ondragstart=e=>e.dataTransfer.setData('text/plain',d.dataset.word); left.appendChild(d); }); pairs.forEach(pr=>{ const dz=document.createElement('div'); dz.className='dropzone'; dz.textContent=pr.b; dz.dataset.target=pr.a.toLowerCase(); dz.ondragover=e=>e.preventDefault(); dz.ondrop=e=>{ e.preventDefault(); const w=e.dataTransfer.getData('text/plain'); if(w===dz.dataset.target){ dz.classList.add('correct'); dz.textContent+=' ✅'; cheer(); } else { dz.style.borderColor='#ef4444'; setTimeout(()=>dz.style.borderColor='#94a3b8',600); } }; right.appendChild(dz); }); p.appendChild(match);
+
+  content.appendChild(p); }
+
+// Unit Exam (same as v3)
+const unitVocabQs = [
+  {stem:'1. We must ______ the environment from pollution.', opts:['protect','pollute','ignore','waste'], ans:'protect'},
+  {stem:'2. Factories should reduce air ______.', opts:['pollution','energy','recycle','climate'], ans:'pollution'},
+  {stem:'3. Solar power is a form of ______ energy.', opts:['renewable','limited','harmful','toxic'], ans:'renewable'},
+  {stem:'4. We need to ______ water to save resources.', opts:['conserve','throw','spend','waste'], ans:'conserve'},
+  {stem:'5. People should ______ plastic to protect nature.', opts:['recycle','burn','ignore','pollute'], ans:'recycle'},
+  {stem:'6. Global warming affects the world\'s ______.', opts:['climate','waste','energy','pollution'], ans:'climate'},
+  {stem:'7. Using ______ products helps the planet.', opts:['eco-friendly','harmful','dirty','toxic'], ans:'eco-friendly'},
+  {stem:'8. We must reduce ______ to keep our cities clean.', opts:['waste','energy','climate','resources'], ans:'waste'},
+  {stem:'9. Wind and solar are ______ sources of energy.', opts:['renewable','limited','harmful','toxic'], ans:'renewable'},
+  {stem:'10. Planting trees helps to fight air ______.', opts:['pollution','recycle','energy','climate'], ans:'pollution'},
+];
+const unitGrammarQs = [
+  {stem:'11. She decided ______ a new eco‑friendly car.', opts:['buy','to buy','buying','to buying'], ans:'to buy'},
+  {stem:'12. He enjoys ______ about saving energy.', opts:['talk','to talk','talking','to talking'], ans:'talking'},
+  {stem:'13. We plan ______ a campaign to protect nature.', opts:['start','to start','starting','to starting'], ans:'to start'},
+  {stem:'14. They suggested ______ plastic waste.', opts:['reduce','to reduce','reducing','to reducing'], ans:'reducing'},
+  {stem:'15. I want ______ more about recycling.', opts:['learn','to learn','learning','to learning'], ans:'to learn'},
+];
+
+function renderUnitExam(){ const p=document.createElement('div'); p.className='panel'; p.innerHTML='<h2>Unit Exam — 20 MCQs</h2>'; const tb=document.createElement('div'); tb.className='toolbar'; p.appendChild(tb); const start=document.createElement('button'); start.className='btn primary'; start.textContent='Start Exam'; tb.appendChild(start); const restart=document.createElement('button'); restart.className='btn secondary'; restart.textContent='Restart Exam'; tb.appendChild(restart); const host=document.createElement('div'); host.className='box'; p.appendChild(host); content.appendChild(p);
+  let score=0, qn=0, seq=[]; function init(){ score=0; qn=0; const extraMix=[
+    {stem:'16. Using reusable bags can ______ plastic waste.', opts:['increase','reduce','ignore','cause'], ans:'reduce'},
+    {stem:'17. Turning off lights helps save ______.', opts:['energy','plastic','food','trees'], ans:'energy'},
+    {stem:'18. The team shared ideas at the school ______.', opts:['assembly','classroom','playground','library'], ans:'assembly'},
+    {stem:'19. Small actions can have a big ______ on sustainability.', opts:['impact','price','problem','noise'], ans:'impact'},
+    {stem:'20. Solar and wind are ______ energy sources.', opts:['renewable','harmful','limited','toxic'], ans:'renewable'},
+  ]; seq=[...unitVocabQs, ...unitGrammarQs, ...extraMix]; next(); }
+  function next(){ host.innerHTML=''; if(qn>=seq.length){ finish(); return; } const q=seq[qn]; qn++; const stem=document.createElement('div'); stem.innerHTML=`<h4>Question ${qn} of ${seq.length}</h4><div>${q.stem}</div>`; host.appendChild(stem); const opts=document.createElement('div'); opts.className='options'; host.appendChild(opts); const shuffledOpts=shuffle(q.opts); shuffledOpts.forEach(o=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o; b.onclick=()=>{ [...opts.children].forEach(btn=> btn.disabled=true); if(o===q.ans){ score++; b.classList.add('correct'); cheer(); setTimeout(next,800);} else { b.classList.add('wrong'); [...opts.children].forEach(btn=>{ if(btn.textContent===q.ans) btn.classList.add('correct'); }); const tip=document.createElement('div'); tip.style.marginTop='8px'; tip.textContent='Correct answer: '+q.ans; host.appendChild(tip); setTimeout(next,1100);} sc.textContent='Score: '+score+' / '+seq.length; }; opts.appendChild(b); }); const sc=document.createElement('div'); sc.style.fontWeight='900'; sc.style.color='var(--good)'; sc.textContent='Score: '+score+' / '+seq.length; host.appendChild(sc); }
+  function finish(){ host.innerHTML += `<div><h3>Exam Finished ✅</h3><div style='font-weight:900;color:#16a34a'>Your score: ${score} / ${seq.length}</div></div>`; }
+  start.onclick=init; restart.onclick=init; }
+
+renderLessonCards(); renderTabs(); renderTabContent();
+</script>
+</body>
+</html>
