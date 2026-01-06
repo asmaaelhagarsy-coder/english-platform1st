@@ -265,7 +265,7 @@
   <footer>1st Secondary – First Term</footer>
   <script>
     function say(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'en-GB'; u.rate = 0.92; speechSynthesis.speak(u); } catch (e) { } }
-    function openUnit(n) { const links = { 1: 'index_simple_sheet_classic%20%281%29%20%284%29.html', 2: 'unit2_mini_platform_lavender.html', 3: 'unit3_mini_platform_ocean.html', 4: 'Unit4_SaveAndShine_Interactive_v4%20%283%29.html', 5: 'unit5_mini_platform_mint.html', 6: 'Unit6_JobHunting_Interactive_v1.html' }; const url = links[n]; if (!url || url === '#') { pulse(n); alert(`Unit ${n} is coming soon.`); } else { location.href = url; } }
+    function openUnit(n) { const links = { 1: 'unit1.html', 2: 'unit2_mini_platform_lavender.html', 3: 'unit3_mini_platform_ocean.html', 4: 'Unit4_SaveAndShine_Interactive_v4%20%283%29.html', 5: 'unit5_mini_platform_mint.html', 6: 'Unit6_JobHunting_Interactive_v1.html' }; const url = links[n]; if (!url || url === '#') { pulse(n); alert(`Unit ${n} is coming soon.`); } else { location.href = url; } }
     function pulse(n) {
       const units = document.querySelectorAll('.unit');
       const el = units[n - 1]; if (!el) return;
