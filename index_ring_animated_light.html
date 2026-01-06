@@ -250,11 +250,13 @@
       <div class='center' role='button' tabindex='0' onclick="say('21st Sec First Term')" aria-label='Center title'>
         <h2>21st Sec First Term</h2>
       </div>
-      <a class='unit pos-t' href='index_simple_sheet_classic%20%281%29 (4).html' onclick='openUnit(1);return false'>Unit
+      <a class='unit pos-t' href='unit1.html'
+        onclick='openUnit(1);return false'>Unit
         1</a>
       <a class='unit pos-tr' href='unit2_mini_platform_lavender.html' onclick='openUnit(2);return false'>Unit 2</a>
       <a class='unit pos-br' href='unit3_mini_platform_ocean.html' onclick='openUnit(3);return false'>Unit 3</a>
-      <a class='unit pos-b' href='Unit4_SaveAndShine_Interactive_v4 (3).html' onclick='openUnit(4);return false'>Unit
+      <a class='unit pos-b' href='Unit4_SaveAndShine_Interactive_v4%20%283%29.html'
+        onclick='openUnit(4);return false'>Unit
         4</a>
       <a class='unit pos-bl' href='unit5_mini_platform_mint.html' onclick='openUnit(5);return false'>Unit 5</a>
       <a class='unit pos-tl' href='Unit6_JobHunting_Interactive_v1.html' onclick='openUnit(6);return false'>Unit 6</a>
@@ -263,7 +265,7 @@
   <footer>1st Secondary – First Term</footer>
   <script>
     function say(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'en-GB'; u.rate = 0.92; speechSynthesis.speak(u); } catch (e) { } }
-    function openUnit(n) { const links = { 1: 'index_simple_sheet_classic%20%281%29 (4).html', 2: 'unit2_mini_platform_lavender.html', 3: 'unit3_mini_platform_ocean.html', 4: 'Unit4_SaveAndShine_Interactive_v4 (3).html', 5: 'unit5_mini_platform_mint.html', 6: 'Unit6_JobHunting_Interactive_v1.html' }; const url = links[n]; if (!url || url === '#') { pulse(n); alert(`Unit ${n} is coming soon.`); } else { location.href = url; } }
+    function openUnit(n) { const links = { 1: 'index_simple_sheet_classic%20%281%29%20%284%29.html', 2: 'unit2_mini_platform_lavender.html', 3: 'unit3_mini_platform_ocean.html', 4: 'Unit4_SaveAndShine_Interactive_v4%20%283%29.html', 5: 'unit5_mini_platform_mint.html', 6: 'Unit6_JobHunting_Interactive_v1.html' }; const url = links[n]; if (!url || url === '#') { pulse(n); alert(`Unit ${n} is coming soon.`); } else { location.href = url; } }
     function pulse(n) {
       const units = document.querySelectorAll('.unit');
       const el = units[n - 1]; if (!el) return;
