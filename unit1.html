@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Unit 1 – Egypt's Heritage | Simple All‑in‑One (Classic layout)</title>
+<style>
+  :root{ --bg:#f9fbfe; --ink:#0f172a; --muted:#52627a; --primary:#2f7af8; --primaryDark:#1c4ed8; --accent:#21c8a4; --accentDark:#159b7f; --good:#12b886; --bad:#ff6b6b; --soft:#eaf2ff; --card1:#ffe9a3; --card2:#d7f9e9; --card3:#ffd6e7; --card4:#e4f0ff; --shadow:0 8px 24px rgba(16,42,67,.12); }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial}
+  header{padding:12px 16px;background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;box-shadow:var(--shadow)}
+  header h1{margin:4px 0;font-size:1.2rem}
+  header .name{margin:0;opacity:.9}
+  main{max-width:1100px;margin:0 auto;padding:12px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap}
+  .tab{flex:1 1 160px;min-width:150px;padding:.7rem 1rem;border:2px solid var(--soft);border-radius:12px;background:#fff;color:var(--primaryDark);font-weight:800;cursor:pointer}
+  .tab:hover{border-color:var(--primary)}
+  .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .subtabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+  .sub{padding:.55rem .8rem;border:2px solid var(--soft);border-radius:10px;background:#fff;color:var(--accentDark);font-weight:700;cursor:pointer}
+  .sub:hover{border-color:var(--accent)}
+  .sub.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .panel{background:#fff;border:2px solid var(--soft);border-radius:14px;box-shadow:var(--shadow);padding:12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .card{border-radius:14px;padding:12px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+  .card h3{margin:.2rem 0 .3rem;font-size:1.15rem}
+  .example{font-size:.95rem;margin-top:.45rem}
+  .actions{display:flex;gap:8px;margin-top:.6rem}
+  .btn{padding:.55rem .8rem;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .btn.primary{background:var(--primary);color:#fff}
+  .btn.soft{background:#fff;color:var(--primaryDark);border:2px solid var(--soft)}
+  .btn.good{background:var(--good);color:#fff}
+  .btn.bad{background:var(--bad);color:#fff}
+  .test{margin-top:12px;background:#fff;border-radius:14px;padding:12px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+  .test-row{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:center;margin:.5rem 0}
+  .test input{width:100%;padding:.6rem;border:2px solid #e8eef7;border-radius:10px;font-size:1rem}
+  .score{margin-top:.6rem;font-weight:700}
+  .game-box{background:#fff;border-radius:14px;padding:12px;box-shadow:0 3px 12px rgba(0,0,0,.08);margin-top:12px}
+  .columns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{background:#f8fbff;border:2px dashed #cfe1ff;border-radius:10px;padding:.6rem;min-height:48px;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .tile.draggable{background:#fff;border:2px solid #bcd6ff;cursor:grab}
+  .tile.matched{background:#d8fff0;border-color:#12b886;color:#0b5e44}
+  .quiz{margin-top:12px}
+  .q-card{background:#fff;border-radius:14px;padding:12px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+  .choices{display:grid;gap:8px;margin:.6rem 0}
+  .choice{padding:.7rem;border-radius:10px;border:2px solid #e8eef7;background:#fff;cursor:pointer}
+  .choice.correct{background:#d8fff0;border-color:#12b886}
+  .choice.wrong{background:#ffe4e4;border-color:#ff6b6b}
+  .progress{height:8px;background:#e8eef7;border-radius:999px;overflow:hidden;margin:8px 0}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,#21c8a4,#2f7af8);transition:width .4s ease}
+  .sentence{background:var(--card4);border-radius:10px;padding:.7rem;margin:.4rem 0;display:flex;justify-content:space-between;align-items:center}
+  .confetti{position:fixed;inset:0;pointer-events:none}
+  .piece{position:absolute;width:10px;height:10px;border-radius:4px;opacity:.9}
+  .dual{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .pill{padding:.4rem .7rem;border-radius:999px;border:2px solid var(--soft);cursor:pointer;background:#fff;color:var(--primaryDark);font-weight:700}
+  .pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Unit 1 – Egypt's Heritage</h1>
+  <p class="name">Teacher: <strong id="teacherName">Ms. Asmaa El‑Hagarsy</strong></p>
+</header>
+
+<main>
+  <div class="tabs" id="topTabs"></div>
+  <div id="content" class="panel"></div>
+</main>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+// Voice
+let voices=[]; function loadVoices(){voices=speechSynthesis.getVoices();} window.speechSynthesis.onvoiceschanged=loadVoices; loadVoices();
+function pickVoice(){ if(!voices||voices.length===0) return null; return voices.find(v=>/en-GB/i.test(v.lang)&&/Female|Fiona|UK/i.test(v.name))||voices.find(v=>/en-GB/i.test(v.lang))||voices.find(v=>/en-US|en/i.test(v.lang))||voices[0]; }
+function speak(text, rate=0.9){ const u=new SpeechSynthesisUtterance(text); const v=pickVoice(); if(v) u.voice=v; u.rate=rate; u.pitch=1.05; u.volume=1; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+// Sounds & confetti
+let enableSound=true; 
+function playGood(){ if(!enableSound) return; const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(720, ctx.currentTime); g.gain.setValueAtTime(0.001, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.28, ctx.currentTime+0.02); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.25); o.connect(g); g.connect(ctx.destination); o.start(); setTimeout(()=>{o.stop();ctx.close();},280); }
+function playBad(){ if(!enableSound) return; const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(); const g=ctx.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(180, ctx.currentTime); g.gain.setValueAtTime(0.25, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.25); o.connect(g); g.connect(ctx.destination); o.start(); setTimeout(()=>{o.stop();ctx.close();},260); }
+function confettiBurst(){ const wrap=document.getElementById('confetti'); for(let i=0;i<32;i++){ const d=document.createElement('div'); d.className='piece'; d.style.left=Math.random()*100+'%'; d.style.top='-10px'; d.style.background=['#2f7af8','#21c8a4','#ffd6e7','#ffe9a3','#d7f9e9'][Math.floor(Math.random()*5)]; d.style.transition='transform 1.2s ease, opacity 1.2s ease'; wrap.appendChild(d); setTimeout(()=>{ d.style.transform=`translateY(${window.innerHeight+40}px) rotate(${(Math.random()*360)|0}deg)`; d.style.opacity='0'; },20); setTimeout(()=>wrap.removeChild(d),1250); } }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+// Sheet MCQs
+const SHEET_VOCAB=[
+  {q:'1) Egypt has a rich ______ that we must protect.',choices:['heritage','future','modernity','technology'],correct:0},
+  {q:'2) The Pyramids are a famous ______ in Egypt.',choices:['monument','object','festival','instrument'],correct:0},
+  {q:'3) Tutankhamun was an ______ Egyptian king.',choices:['ancient','modern','temporary','recent'],correct:0},
+  {q:'4) The Nile helped the growth of Egyptian ______.',choices:['civilization','disaster','animal','person'],correct:0},
+  {q:'5) The museum displayed a rare ______ from ancient times.',choices:['artifact','machine','plant','note'],correct:0},
+  {q:'6) We should ______ our historical buildings.',choices:['preserve','destroy','ignore','forget'],correct:0},
+  {q:'7) Our ………… lived in small villages and worked hard to survive.',choices:['ancestors','festival','language','building'],correct:0},
+  {q:'8) ______ is the study of human history through remains.',choices:['Archaeology','Astronomy','Botany','Meteorology'],correct:0},
+  {q:'9) The Karnak ______ is one of the largest in Egypt.',choices:['temple','food','instrument','festival'],correct:0},
+  {q:'10) A ______ ruled Egypt thousands of years ago.',choices:['pharaoh','soldier','farmer','priest'],correct:0}
+];
+const SHEET_GRAMMAR=[
+  {q:'11) I ______ the museum yesterday.',choices:['visit','visited','was visiting','visiting'],correct:1},
+  {q:'12) While I ______ in the street, I saw an old friend.',choices:['walk','walked','was walking','walking'],correct:2},
+  {q:'13) She ______ a book when the phone rang.',choices:['read','was reading','reads','reading'],correct:1},
+  {q:'14) They ______ football last weekend.',choices:['play','played','playing','was playing'],correct:1},
+  {q:'15) I ______ when you called me.',choices:['sleep','slept','sleeping','was sleeping'],correct:3},
+  {q:'16) He ______ TV when his mother came home.',choices:['watch','watched','watching','was watching'],correct:3},
+  {q:'17) We ______ to Cairo last summer.',choices:['go','went','was going','going'],correct:1},
+  {q:'18) She ______ dinner when I arrived.',choices:['cook','cooked','cooking','was cooking'],correct:3},
+  {q:'19) I ______ the pyramids two years ago.',choices:['see','saw','seeing','was seeing'],correct:1},
+];
+const SHEET_FILL=[
+  {q:'21) Egyptian ______ is famous all over the world.',choices:['heritage','monument','civilization','artifact'],correct:0},
+  {q:'22) The Pyramids are an important ______ in Egypt.',choices:['merchant','monument','pharaoh','artifact'],correct:1},
+  {q:'23) Ancient ______ developed along the Nile River.',choices:['civilization','artifact','pharaoh','merchant'],correct:0},
+  {q:'24) The museum displayed a rare ______ from ancient times.',choices:['artifact','heritage','merchant','pharaoh'],correct:0},
+  {q:'25) Tutankhamun was a young ______ who ruled Egypt.',choices:['monument','merchant','pharaoh','heritage'],correct:2}
+];
+// Lessons: Grammar only for Lesson 3; Vocab & Games layout kept classic; Reading has 6 sentences
+const LESSONS=[
+  {id:'l1',title:'Lesson 1',hasGrammar:false,
+   vocab:[
+     {word:'heritage', ar:'تراث', ex:'We protect our heritage for future generations.', color:'var(--card4)'},
+     {word:'civilization', ar:'حضارة', ex:'Ancient Egypt was a great civilization.', color:'var(--card1)'},
+     {word:'hieroglyphs', ar:'الكتابة الهيروغليفية', ex:'Hieroglyphs recorded history on temple walls.', color:'var(--card3)'},
+     {word:'monument', ar:'أثر تاريخي / نصب تذكاري', ex:'The Pyramids are famous monuments.', color:'var(--card2)'},
+     {word:'Library of Alexandria', ar:'مكتبة الإسكندرية', ex:'The Library of Alexandria gathered knowledge from around the world.', color:'var(--card4)'},
+     {word:'merchants', ar:'التجار', ex:'Merchants travelled along the Nile selling goods.', color:'var(--card1)'},
+     {word:'crossroads', ar:'ملتقى طرق', ex:'Egypt was a crossroads for trade and ideas.', color:'var(--card2)'},
+     {word:'record', ar:'يسجل', ex:'We record history to learn from the past.', color:'var(--card3)'},
+     {word:'determination', ar:'عزيمة', ex:'Determination helps us build a better future.', color:'var(--card4)'},
+     {word:'progress', ar:'تقدم', ex:'Modern projects show Egypt’s progress.', color:'var(--card1)'}
+   ],
+   reading:[
+     'Egypt is a land of history and culture.',
+     'Our ancestors built strong civilizations.',
+     'Hieroglyphs recorded stories on temple walls.',
+     'Merchants met at crossroads for trade.',
+     'We preserve identity by restoring historical sites.',
+     'Determination and progress keep our culture alive.'
+   ]},
+  {id:'l2',title:'Lesson 2',hasGrammar:false,
+   vocab:[
+     {word:'archaeologist', ar:'عالِم آثار', ex:'An archaeologist studies ancient objects and sites.', color:'var(--card1)'},
+     {word:'identity', ar:'هوية', ex:'History helps build a strong national identity.', color:'var(--card3)'},
+     {word:'restore', ar:'يُرمِّم', ex:'We restore old buildings to protect the past.', color:'var(--card2)'},
+     {word:'preserve', ar:'يحافظ على', ex:'We preserve historical sites for future generations.', color:'var(--card2)'},
+     {word:'awareness', ar:'وعي', ex:'We raise awareness among young people about history.', color:'var(--card4)'},
+     {word:'tourism', ar:'سياحة', ex:'Tourism improves the economy and teaches culture.', color:'var(--card1)'}
+   ],
+   reading:[
+     'Archaeologists study ancient monuments and sites.',
+     'Restoration helps protect valuable heritage.',
+     'Awareness teaches young people to value history.',
+     'Tourism supports the economy and shares culture.',
+     'Teachers encourage visits to museums and temples.',
+     'We balance modern life with protecting our culture.'
+   ]},
+  {id:'l3',title:'Lesson 3',hasGrammar:true,
+   vocab:[
+     {word:'survive', ar:'يبقى على قيد الحياة', ex:'People long ago survived by farming and raising animals.', color:'var(--card1)'},
+     {word:'farming', ar:'زراعة', ex:'Farming provided food for families in the past.', color:'var(--card2)'},
+     {word:'raise (animals)', ar:'يربّي (حيوانات)', ex:'Many families raised animals for milk and meat.', color:'var(--card3)'},
+     {word:'benefit', ar:'فائدة', ex:'Writing brought a big benefit: sharing knowledge.', color:'var(--card4)'},
+     {word:'discover', ar:'يكتشف', ex:'People discovered writing to record ideas.', color:'var(--card1)'}
+   ],
+   reading:[
+     'Long ago, people survived by farming and raising animals.',
+     'The discovery of writing helped people share ideas.',
+     'Writing improved learning and daily life.',
+     'Technology is fast, but the past still teaches lessons.',
+     'We remember the past to make wise choices.',
+     'Learning from history gives great value today.'
+   ]},
+  {id:'l4',title:'Lesson 4',hasGrammar:false,
+   vocab:[
+     {word:'pride', ar:'فخر', ex:'True pride grows from history, culture, and shared values.', color:'var(--card4)'},
+     {word:'magnificent', ar:'رائع', ex:'Magnificent temples stand along the Nile.', color:'var(--card4)'},
+     {word:'achievement', ar:'إنجاز', ex:'Writing and medicine were great achievements.', color:'var(--card1)'},
+     {word:'inspire', ar:'يُلهم', ex:'Egypt’s story continues to inspire people everywhere.', color:'var(--card2)'},
+     {word:'values', ar:'قيم', ex:'Shared values help us stay united.', color:'var(--card4)'}
+   ],
+   reading:[
+     'Pride begins with respect for history and culture.',
+     'Ancient Egyptians built mighty and magnificent monuments.',
+     'They developed writing and useful medical knowledge.',
+     'Egypt became a center of learning for authors and poets.',
+     'Our heritage shows determination and creativity.',
+     'True pride grows when we honor the past and work hard.'
+   ]}
+];
+// Build UI
+const topTabs=document.getElementById('topTabs');
+const content=document.getElementById('content');
+function buildTopTabs(){ topTabs.innerHTML=''; LESSONS.forEach((L,i)=>{ const b=document.createElement('button'); b.className='tab'+(i===0?' active':''); b.textContent=L.title; b.onclick=()=>selectLesson(L,b); topTabs.appendChild(b); }); const examBtn=document.createElement('button'); examBtn.className='tab'; examBtn.textContent='Unit Exam'; examBtn.onclick=()=>renderExam(examBtn); topTabs.appendChild(examBtn); }
+function highlightActive(btn){ [...topTabs.children].forEach(x=>x.classList.remove('active')); btn.classList.add('active'); }
+function selectLesson(L,btn){ highlightActive(btn); renderLesson(L); }
+function renderLesson(L){ content.innerHTML=''; const subt=document.createElement('div'); subt.className='subtabs'; const names=['Vocabulary','Games','Reading']; if(L.hasGrammar) names.push('Grammar'); names.forEach((n,k)=>{ const s=document.createElement('button'); s.className='sub'+(k===0?' active':''); s.textContent=n; s.onclick=()=>{ [...subt.children].forEach(x=>x.classList.remove('active')); s.classList.add('active'); showSection(n,L); }; subt.appendChild(s); }); content.appendChild(subt); const area=document.createElement('div'); area.id='sectionArea'; content.appendChild(area); showSection('Vocabulary',L); }
+function showSection(name,L){ const area=document.getElementById('sectionArea'); area.innerHTML=''; if(name==='Vocabulary'){ const grid=document.createElement('div'); grid.className='grid'; area.appendChild(grid); L.vocab.forEach(v=>{ const c=document.createElement('div'); c.className='card'; c.style.background=v.color; c.innerHTML=`<h3>${v.word}</h3><div>${v.ar}</div><div class='example'>Example: ${v.ex}</div><div class='actions'><button class='btn good'>Speak word</button><button class='btn soft'>Speak sentence</button></div>`; c.querySelector('.btn.good').onclick=()=>{playGood(); speak(v.word,0.85)}; c.querySelector('.btn.soft').onclick=()=>speak(v.ex,0.9); grid.appendChild(c); }); const test=document.createElement('div'); test.className='test'; test.innerHTML=`<h4>Dictation · اكتب المعنى بالإنجليزية من الترجمة العربية</h4><div id='testRows'></div><div class='score' id='testScore'>Score: 0 / 0</div><button class='btn primary' id='testCheck'>Check Answers</button> <button class='btn soft' id='testReset'>Reset</button>`; area.appendChild(test); const rows=document.getElementById('testRows'); const subset=L.vocab.slice(0,8); subset.forEach((v,i)=>{ const row=document.createElement('div'); row.className='test-row'; row.innerHTML=`<div>${i+1}. ${v.ar}</div><input data-answer='${v.word}' placeholder='Type the English word'/>`; rows.appendChild(row); }); document.getElementById('testScore').textContent=`Score: 0 / ${subset.length}`; document.getElementById('testCheck').onclick=()=>{ let correct=0; [...rows.querySelectorAll('input')].forEach(inp=>{ const a=inp.dataset.answer.trim().toLowerCase(); const val=inp.value.trim().toLowerCase(); if(val===a){ inp.style.borderColor='var(--good)'; inp.style.background='#eaffe9'; correct++; playGood(); confettiBurst(); } else { inp.style.borderColor='var(--bad)'; inp.style.background='#ffe9ef'; playBad(); } }); document.getElementById('testScore').textContent=`Score: ${correct} / ${subset.length}`; }; document.getElementById('testReset').onclick=()=>{ [...rows.querySelectorAll('input')].forEach(inp=>{ inp.value=''; inp.style.borderColor='#e8eef7'; inp.style.background='#fff'; }); document.getElementById('testScore').textContent=`Score: 0 / ${subset.length}`; }; }
+  else if(name==='Games'){ const box=document.createElement('div'); box.className='game-box'; box.innerHTML=`<h3>Card Matching (Drag & Drop)</h3><p>Drag the English word to its Arabic meaning.</p><div class='columns'><div id='colEN'></div><div id='colAR'></div></div><div style='display:flex;gap:12px;margin-top:8px'><div>Matches: <span id='matchCount'>0</span>/<span id='matchTotal'>0</span></div><div>Time: <span id='timer'>0</span>s</div></div><button class='btn soft' id='matchReset'>Reset Game</button>`; area.appendChild(box); let matched=0; let timer=0; let tick=setInterval(()=>{timer++; document.getElementById('timer').textContent=timer},1000); const sample=L.vocab.slice(0,8); document.getElementById('matchTotal').textContent=sample.length; document.getElementById('matchCount').textContent=0; const colEN=document.getElementById('colEN'); const colAR=document.getElementById('colAR'); function shuffleArr(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} } let pairs=sample.map((v,idx)=>({id:idx,en:v.word,ar:v.ar})); shuffleArr(pairs); const EN=pairs.map(p=>({id:p.id,text:p.en})); const AR=pairs.map(p=>({id:p.id,text:p.ar})); shuffleArr(EN); shuffleArr(AR); EN.forEach(e=>{ const t=document.createElement('div'); t.className='tile draggable'; t.textContent=e.text; t.draggable=true; t.dataset.id=e.id; t.addEventListener('dragstart',ev=>ev.dataTransfer.setData('text/plain', e.id)); colEN.appendChild(t); }); AR.forEach(a=>{ const t=document.createElement('div'); t.className='tile'; t.textContent=a.text; t.dataset.id=a.id; t.addEventListener('dragover',ev=>ev.preventDefault()); t.addEventListener('drop',ev=>{ ev.preventDefault(); const from=ev.dataTransfer.getData('text/plain'); if(String(from)===String(a.id)){ t.classList.add('matched'); t.textContent=a.text+' ✓'; const drag=[...colEN.children].find(x=>x.dataset.id===String(from)); if(drag){drag.classList.add('matched'); drag.draggable=false;} matched++; document.getElementById('matchCount').textContent=matched; playGood(); confettiBurst(); } else { playBad(); } }); colAR.appendChild(t); }); document.getElementById('matchReset').onclick=()=>{ clearInterval(tick); showSection('Games',L); };
+    const quiz=document.createElement('div'); quiz.className='quiz'; quiz.innerHTML=`<h3>Vocabulary Quiz (from sheet)</h3><div class='progress'><div class='bar' id='quizBar'></div></div><div class='q-card'><div id='qText'></div><div class='choices' id='qChoices'></div><div class='score' id='qScore'>0 correct</div><button class='btn primary' id='qNext'>Next</button><button class='btn soft' id='qRestart'>Restart</button></div>`; area.appendChild(quiz); let QUIZ=SHEET_VOCAB.slice(); let qIndex=0; let qScore=0; function renderQ(){ document.getElementById('quizBar').style.width=((qIndex)/QUIZ.length*100)+'%'; const t=document.getElementById('qText'); const c=document.getElementById('qChoices'); const sc=document.getElementById('qScore'); c.innerHTML=''; if(qIndex>=QUIZ.length){ t.innerHTML=`<strong>Finished!</strong> You answered ${qScore} / ${QUIZ.length} correctly.`; sc.textContent=`${qScore} correct`; document.getElementById('quizBar').style.width='100%'; playGood(); confettiBurst(); return; } const q=QUIZ[qIndex]; t.textContent=q.q; q.choices.forEach((ch,i)=>{ const btn=document.createElement('div'); btn.className='choice'; btn.textContent=ch; btn.onclick=()=>{ if(btn.dataset.lock) return; btn.dataset.lock='1'; if(i===q.correct){ btn.classList.add('correct'); qScore++; playGood(); confettiBurst(); } else { btn.classList.add('wrong'); playBad(); } sc.textContent=`${qScore} correct`; [...c.children].forEach(x=>x.dataset.lock='1'); }; c.appendChild(btn); }); }
+    renderQ(); document.getElementById('qNext').onclick=()=>{ qIndex++; renderQ(); }; document.getElementById('qRestart').onclick=()=>{ QUIZ=SHEET_VOCAB.slice(); qIndex=0; qScore=0; renderQ(); document.getElementById('quizBar').style.width='0%'; };
+  }
+  else if(name==='Reading'){ L.reading.forEach((s,i)=>{ const row=document.createElement('div'); row.className='sentence'; row.innerHTML=`<span>${i+1}. ${s}</span><button class='btn good'>Play</button>`; row.querySelector('button').onclick=()=>speak(s,0.9); area.appendChild(row); }); }
+  else if(name==='Grammar'){ const quiz=document.createElement('div'); quiz.className='quiz'; quiz.innerHTML=`<h3>Grammar MCQ (from sheet)</h3><div class='q-card' id='gCard'></div>`; area.appendChild(quiz); const gCard=document.getElementById('gCard'); SHEET_GRAMMAR.forEach(qObj=>{ const wrap=document.createElement('div'); wrap.style.margin='10px 0'; wrap.innerHTML=`<div style='font-weight:700;margin-bottom:6px'>${qObj.q}</div>`; const chs=document.createElement('div'); chs.className='choices'; qObj.choices.forEach((opt,i)=>{ const c=document.createElement('div'); c.className='choice'; c.textContent=opt; c.onclick=()=>{ if(wrap.dataset.lock) return; wrap.dataset.lock='1'; if(i===qObj.correct){ c.classList.add('correct'); playGood(); confettiBurst(); } else { c.classList.add('wrong'); playBad(); } [...chs.children].forEach(x=>x.dataset.lock='1'); }; chs.appendChild(c); }); wrap.appendChild(chs); gCard.appendChild(wrap); }); }
+}
+function renderExam(btn){ highlightActive(btn); content.innerHTML=''; const modeWrap=document.createElement('div'); modeWrap.className='dual'; const pillV=document.createElement('button'); pillV.className='pill active'; pillV.textContent='Vocabulary'; const pillG=document.createElement('button'); pillG.className='pill'; pillG.textContent='Grammar'; modeWrap.appendChild(pillV); modeWrap.appendChild(pillG); content.appendChild(modeWrap); const box=document.createElement('div'); box.className='quiz'; box.innerHTML=`<h3>Unit Exam</h3><div class='progress'><div class='bar' id='bar'></div></div><div class='q-card' id='examQ'></div>`; content.appendChild(box); let source=SHEET_VOCAB.concat(SHEET_FILL); let idx=0, score=0; const order=[...Array(source.length).keys()]; function reset(mode){ score=0; idx=0; document.getElementById('bar').style.width='0%'; if(mode==='Grammar'){ source=SHEET_GRAMMAR.slice(); } else { source=SHEET_VOCAB.concat(SHEET_FILL); } order.splice(0,order.length,...[...Array(source.length).keys()]); render(); } function activate(p){ pillV.classList.remove('active'); pillG.classList.remove('active'); p.classList.add('active'); }
+  pillV.onclick=()=>{ activate(pillV); reset('Vocabulary'); };
+  pillG.onclick=()=>{ activate(pillG); reset('Grammar'); };
+  const examQ=document.getElementById('examQ'); function render(){ const bar=document.getElementById('bar'); const q=source[order[idx]]; bar.style.width=(idx/source.length*100)+'%'; examQ.innerHTML=`<div style='font-weight:700;margin-bottom:6px'>${idx+1}/${source.length} – ${q.q}</div><div class='choices' id='exChoices'></div><div class='score' id='exScore'>${score} correct</div>`; const box=document.getElementById('exChoices'); q.choices.forEach((ch,i)=>{ const d=document.createElement('div'); d.className='choice'; d.textContent=ch; d.onclick=()=>{ if(d.dataset.lock) return; d.dataset.lock='1'; const ok=i===q.correct; if(ok){ d.classList.add('correct'); score++; playGood(); confettiBurst(); } else { d.classList.add('wrong'); playBad(); } [...box.children].forEach(c=>c.dataset.lock='1'); document.getElementById('exScore').textContent=`${score} correct`; }; box.appendChild(d); }); }
+  function next(){ if(idx<source.length-1){ idx++; render(); } else { document.getElementById('bar').style.width='100%'; examQ.innerHTML=`<strong>Finished!</strong> Score: ${score} / ${source.length}`; playGood(); confettiBurst(); } }
+  render(); const nextBtn=document.createElement('button'); nextBtn.className='btn primary'; nextBtn.textContent='Next'; nextBtn.onclick=next; box.appendChild(nextBtn); const restartBtn=document.createElement('button'); restartBtn.className='btn soft'; restartBtn.textContent='Restart'; restartBtn.onclick=()=>reset(pillV.classList.contains('active')?'Vocabulary':'Grammar'); box.appendChild(restartBtn); }
+// Init
+(function(){ document.getElementById('teacherName').textContent='Ms. Asmaa El‑Hagarsy'; buildTopTabs(); selectLesson(LESSONS[0], topTabs.children[0]); })();
+</script>
+</body>
+</html>
